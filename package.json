@@ -1,0 +1,20 @@
+{
+  "name": "blog",
+  "version": "1.0.0",
+  "description": "Lab 6",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SamCas/SamuelCastillo90_Lab6.git"
+  },
+  "author": "Samuel C.",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/SamCas/SamuelCastillo90_Lab6/issues"
+  },
+  "homepage": "https://github.com/SamCas/SamuelCastillo90_Lab6#readme"
+}
