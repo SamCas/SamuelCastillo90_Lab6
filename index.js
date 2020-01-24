@@ -13,13 +13,19 @@ let comments = [{
     titulo: "Bye bye London",
     contenido: "Yes, this is my post.",
     autor: "Samuel",
-    fecha: "2020-30-01"
+    fecha: "2020-03-01"
+},{
+    id: 1236213724,
+    titulo: "ID Estatico",
+    contenido: "Content.",
+    autor: "Hola Mundo",
+    fecha: "2020-12-03"
 },{
     id: uuid(),
     titulo: "New Comment",
     contenido: null,
     autor: "Manuel",
-    fecha: "2020-30-03"
+    fecha: "2020-01-11"
 }];
 
 app.listen(8080, () => {
@@ -55,7 +61,44 @@ app.post('/blog-api/nuevo-comentario',jsonParser,(req, res) => {
     if(isBlank(newComment.titulo) || isBlank(newComment.autor)){
         return res.status(406).send('Titulo o autor no valido.');
     }else{
+        comments.push(newComment);
         return res.status(200).send('Commentario agregado con exito.');
+    }
+});
+
+app.delete('/blog-api/remover-comentario/:id',jsonParser,(req, res) => {
+    let commentToDelete = req.params.id;
+  
+    if(isBlank(commentToDelete)){
+        return res.status(404).send('No se encontro ningun comentario con ese id.');
+    }else{
+        comments = comments.filter((comment) => comment.id != commentToDelete);  
+        return res.status(200).send('El comentario se borro con exito.');
+    }
+});
+
+app.put('/blog-api/actualizar-comentario/:id',jsonParser,(req, res) => {
+    let commentToUpdate = {
+        id : req.body.id,
+        titulo : req.body.titulo,
+        autor : req.body.autor,
+        fecha : req.body.fecha
+    }
+
+    if(isBlank(commentToUpdate.id)){
+        return res.status(406).send('No se encontro id en el cuerpo.');
+    }else{
+        if(commentToUpdate.id == req.params.id){
+            if(isBlank(commentToUpdate.id) && isBlank(commentToUpdate.titulo) && isBlank(commentToUpdate.autor) && isBlank(commentToUpdate.fecha)){
+                return res.status(406).send('Es necesario colocar valores a actualizar.');
+            }else{
+                let oldComment = comments.find((comment) => comment.id == commentToUpdate.id);
+                let newComment = {...oldComment, ...commentToUpdate};
+                return res.status(202).json(newComment);
+            }
+        }else{
+            return res.status(406).send('El id del cuerpo no coincide con el de los parametros.');
+        }
     }
 });
 
