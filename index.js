@@ -38,11 +38,11 @@ app.get('/blog-api/comentarios', (req, res) => {
 
 app.get('/blog-api/comentarios-por-autor', (req, res) => {
     let autor = req.query.autor;
-    console.log(autor);
+    
     if(isBlank(autor)){
         return res.status(406).send('Ingrese un autor valido.');
     }else{
-        let findAutor = comments.find((comment) => comment.autor == autor && isBlank(comment.contenido));
+        let findAutor = comments.find((comment) => comment.autor == autor);
         if(isBlank(findAutor)){
             return res.status(406).send('No se encontro ningun autor o no hay ningun commentario.');
         }
@@ -54,15 +54,18 @@ app.post('/blog-api/nuevo-comentario',jsonParser,(req, res) => {
     let newComment = {
         id : uuid(),
         titulo : req.body.titulo,
+        contenido: req.body.contenido,
         autor : req.body.autor,
         fecha : Date()
     }
+
+    console.log(newComment);
 
     if(isBlank(newComment.titulo) || isBlank(newComment.autor)){
         return res.status(406).send('Titulo o autor no valido.');
     }else{
         comments.push(newComment);
-        return res.status(200).send('Commentario agregado con exito.');
+        return res.status(200).json(newComment);
     }
 });
 
@@ -82,8 +85,10 @@ app.put('/blog-api/actualizar-comentario/:id',jsonParser,(req, res) => {
         id : req.body.id,
         titulo : req.body.titulo,
         autor : req.body.autor,
-        fecha : req.body.fecha
+        fecha : Date()
     }
+
+    console.log(commentToUpdate);
 
     if(isBlank(commentToUpdate.id)){
         return res.status(406).send('No se encontro id en el cuerpo.');
@@ -92,9 +97,10 @@ app.put('/blog-api/actualizar-comentario/:id',jsonParser,(req, res) => {
             if(isBlank(commentToUpdate.id) && isBlank(commentToUpdate.titulo) && isBlank(commentToUpdate.autor) && isBlank(commentToUpdate.fecha)){
                 return res.status(406).send('Es necesario colocar valores a actualizar.');
             }else{
-                let oldComment = comments.find((comment) => comment.id == commentToUpdate.id);
-                let newComment = {...oldComment, ...commentToUpdate};
-                return res.status(202).json(newComment);
+                var foundIndex = comments.findIndex(comment => comment.id == commentToUpdate.id);
+                console.log(foundIndex);
+                comments[foundIndex] = {...comments[foundIndex], ...commentToUpdate};
+                return res.status(202).send('Comentario actualizado con exito.');
             }
         }else{
             return res.status(406).send('El id del cuerpo no coincide con el de los parametros.');
